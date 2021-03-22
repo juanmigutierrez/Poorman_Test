@@ -1,0 +1,102 @@
+---
+title: "Poorman_Test : Miguel Gutierrez"
+output: html_notebook
+---
+
+# Point 1
+
+1) Add new columns to the following dataset which equate to the mean, median and the sum of each row. 
+
+```{r}
+df <- data.frame(x = runif(6), y = runif(6), z = runif(6))
+df$Mean = apply(df[,c('x','y','z')],1,function(x) mean(x))
+df$Median = apply(df[,c('x','y','z')],1,function(x) median(x))
+df$Sum = apply(df[,c('x','y','z')],1,function(x) sum(x))
+df
+```
+# Point 2
+
+
+2) Using `stats::reshape()`, change the following dataset to wide format such that there is one row per sample and then reshape it back to the original shape.
+
+
+```{r}
+df <- data.frame(sample = c(rep(1, 10), rep(2, 10)), test = rep(1:10, 2), values = runif(20))
+df
+```
+
+we change the format such that there is one row per sample
+
+```{r}
+reshaped = reshape(df, v.names = "values", idvar = "sample",timevar = "test", direction = "wide")
+reshaped
+```
+
+Now we are reshaping it back
+
+
+```{r}
+original = reshape(reshaped, direction = "long")
+original = original[order(original$sample),]
+original
+```
+# Point 3
+
+3) Using `stats::reshape()`, reshape the following data to long format such that there are five columns: `sex`, `age`, `id`, `exam` and `score`. Then reshape the data back into the original format.
+
+```{r}
+df <- structure(list(
+  sex = c(1L, 1L, 0L, 0L, 1L, 1L, 0L, 1L, 0L, 1L),
+  age = rep(c(15L, 16L), 5),
+  exam1 = c(34L, 47L, 41L, 44L, 47L, 42L, 57L, 61L, 53L, 42L),
+  exam2 = c(46L, 54L, 47L, 41L, 65L, 41L, 62L, 59L, 61L, 39L),
+  exam3 = c(45L, 49L, 40L, 40L, 60L, 57L, 63L, 49L, 61L, 42L),
+  exam4 = c(39L, 53L, 39L, 50L, 50L, 72L, 55L, 44L, 57L, 42L),
+  exam5 = c(36L, 61L, 51L, 26L, 56L, 31L, 41L, 66L, 56L, 41L)
+), class = "data.frame", row.names = c(NA, -10L))
+df
+```
+
+First we reshape in long  format
+
+
+```{r}
+reshaped = reshape(df, sep ="",varying = 3:7, direction = "long")
+reshaped = reshaped[order(reshaped$sex,reshaped$age),]
+names(reshaped)[names(reshaped)=="exam"] = "score"
+names(reshaped)[names(reshaped)=="time"] = "exam"
+reshaped
+```
+
+then again in original format
+
+```{r}
+reshape(reshaped, v.names = "score",timevar = "exam",direction = "wide")
+```
+
+# Point 4
+
+
+4) Using `stats::reshape()`, reshape the following data to a wide format with the resulting columns: `id`, `min.1`, `max.1`, `min.2`, `max.2.` Then reshape the data back to the original shape.
+
+```{r}
+df <- data.frame(id = rep(1:4, each = 2), sample = rep(c(1, 2), 4), min = 1:8, max = 3:10)
+df
+```
+First we reshape the data as proposed in the testa
+
+
+```{r}
+reshaped = reshape(df, v.names = c("min","max"), idvar = "id",timevar = "sample", direction = "wide")
+reshaped
+```
+
+Now we reshaped the data back to the original shape
+
+```{r}
+original = reshape(reshaped, varying=2:5, direction = "long")
+names(original)[names(original)=="time"] = "sample"
+original
+```
+
+
